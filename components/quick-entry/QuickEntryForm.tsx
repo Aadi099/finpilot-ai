@@ -30,7 +30,7 @@ const defaultEntry: QuickEntry = {
   transactionDate: today,
   paidDate: today,
   paymentMethod: "UPI",
-  account: "HDFC Salary Account",
+  account: "",
   note: "",
 };
 
@@ -175,6 +175,7 @@ export function QuickEntryForm() {
             onChange={(event) => updateField("account", event.target.value)}
             value={entry.account}
           >
+            <option value="">Select account after adding one</option>
             {accounts.map((account) => (
               <option key={account.id}>{account.name}</option>
             ))}
@@ -193,6 +194,16 @@ export function QuickEntryForm() {
 
         <button className="primary-button big" onClick={saveEntry} type="button">
           Save entry
+        </button>
+        <button
+          className="ghost-button big"
+          onClick={() => {
+            window.localStorage.removeItem("finpilot.quickEntries");
+            setSavedEntries([]);
+          }}
+          type="button"
+        >
+          Clear saved quick entries
         </button>
       </div>
 

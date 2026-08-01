@@ -106,6 +106,16 @@ export function AddBankAccountForm() {
         <button className="primary-button big" onClick={saveBankAccount} type="button">
           Save bank account
         </button>
+        <button
+          className="ghost-button big"
+          onClick={() => {
+            window.localStorage.removeItem(storageKey);
+            setAccounts([]);
+          }}
+          type="button"
+        >
+          Clear saved banks
+        </button>
       </div>
       {accounts.length > 0 ? (
         <div className="local-bank-list">

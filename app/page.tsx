@@ -56,14 +56,14 @@ export default function DashboardPage() {
         <div className="net-worth">
           <span>Total net worth</span>
           <strong>{formatCurrency(netWorth)}</strong>
-          <small>+3.8% this month</small>
+          <small>Ready for your first entries</small>
         </div>
       </section>
 
       <section className="metric-grid">
         <MetricCard label="Monthly income" value={formatCurrency(monthlyIncome)} trend="+6.2%" />
         <MetricCard label="Bank balance" value={formatCurrency(bankBalance)} trend={`${bankAccounts.length} banks`} />
-        <MetricCard label="Expenses" value={formatCurrency(monthlyExpenses)} trend="-4.1%" tone="warn" />
+        <MetricCard label="Expenses" value={formatCurrency(monthlyExpenses)} trend="No spends yet" tone="warn" />
         <MetricCard label="Investments" value={formatCurrency(investmentValue)} trend={formatCurrency(unrealizedGain)} />
       </section>
 
@@ -80,16 +80,24 @@ export default function DashboardPage() {
             <div>
               <span>Total bank balance</span>
               <strong>{formatCurrency(bankBalance)}</strong>
-              {bankAccounts.map((account) => (
-                <small key={account.id}>{account.name}: {formatCurrency(account.balance)}</small>
-              ))}
+              {bankAccounts.length > 0 ? (
+                bankAccounts.map((account) => (
+                  <small key={account.id}>{account.name}: {formatCurrency(account.balance)}</small>
+                ))
+              ) : (
+                <small>Add your first bank account to begin.</small>
+              )}
             </div>
             <div>
               <span>Total investment value</span>
               <strong>{formatCurrency(investmentValue)}</strong>
-              {investments.slice(0, 3).map((investment) => (
-                <small key={investment.name}>{investment.name}: {formatCurrency(investment.currentValue)}</small>
-              ))}
+              {investments.length > 0 ? (
+                investments.slice(0, 3).map((investment) => (
+                  <small key={investment.name}>{investment.name}: {formatCurrency(investment.currentValue)}</small>
+                ))
+              ) : (
+                <small>Add your opening investment value this month.</small>
+              )}
             </div>
           </div>
         </div>
@@ -148,16 +156,20 @@ export default function DashboardPage() {
             <span className="pill">{formatCurrency(investmentValue)}</span>
           </div>
           <div className="allocation-list">
-            {assetAllocation.map((asset) => (
-              <div className="allocation-row" key={asset.name}>
-                <div>
-                  <span className="dot" style={{ background: asset.color }} />
-                  <strong>{asset.name}</strong>
+            {assetAllocation.length > 0 ? (
+              assetAllocation.map((asset) => (
+                <div className="allocation-row" key={asset.name}>
+                  <div>
+                    <span className="dot" style={{ background: asset.color }} />
+                    <strong>{asset.name}</strong>
+                  </div>
+                  <ProgressBar value={asset.weight} color={asset.color} />
+                  <span>{asset.weight}%</span>
                 </div>
-                <ProgressBar value={asset.weight} color={asset.color} />
-                <span>{asset.weight}%</span>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="empty-state">No investment allocation yet.</p>
+            )}
           </div>
         </div>
 
@@ -169,15 +181,19 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="stack">
-            {goals.slice(0, 3).map((goal) => (
-              <div className="goal-row" key={goal.name}>
-                <div>
-                  <strong>{goal.name}</strong>
-                  <span>{formatCurrency(goal.current)} of {formatCurrency(goal.target)}</span>
+            {goals.length > 0 ? (
+              goals.slice(0, 3).map((goal) => (
+                <div className="goal-row" key={goal.name}>
+                  <div>
+                    <strong>{goal.name}</strong>
+                    <span>{formatCurrency(goal.current)} of {formatCurrency(goal.target)}</span>
+                  </div>
+                  <ProgressBar value={Math.round((goal.current / goal.target) * 100)} />
                 </div>
-                <ProgressBar value={Math.round((goal.current / goal.target) * 100)} />
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="empty-state">No goals yet.</p>
+            )}
           </div>
         </div>
 
@@ -190,15 +206,19 @@ export default function DashboardPage() {
             <span className="pill">{upcomingBills.length} due</span>
           </div>
           <div className="stack">
-            {upcomingBills.map((bill) => (
-              <div className="list-row" key={bill.name}>
-                <div>
-                  <strong>{bill.name}</strong>
-                  <span>{formatDate(bill.dueDate)}</span>
+            {upcomingBills.length > 0 ? (
+              upcomingBills.map((bill) => (
+                <div className="list-row" key={bill.name}>
+                  <div>
+                    <strong>{bill.name}</strong>
+                    <span>{formatDate(bill.dueDate)}</span>
+                  </div>
+                  <b>{formatCurrency(bill.amount)}</b>
                 </div>
-                <b>{formatCurrency(bill.amount)}</b>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="empty-state">No upcoming bills yet.</p>
+            )}
           </div>
         </div>
 
@@ -210,16 +230,20 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="table">
-            {transactions.slice(0, 6).map((transaction) => (
-              <div className="table-row" key={transaction.id}>
-                <span>{transaction.merchant}</span>
-                <span>{transaction.category}</span>
-                <span>{transaction.paymentMethod}</span>
-                <strong className={transaction.amount > 0 ? "positive" : ""}>
-                  {formatCurrency(transaction.amount)}
-                </strong>
-              </div>
-            ))}
+            {transactions.length > 0 ? (
+              transactions.slice(0, 6).map((transaction) => (
+                <div className="table-row" key={transaction.id}>
+                  <span>{transaction.merchant}</span>
+                  <span>{transaction.category}</span>
+                  <span>{transaction.paymentMethod}</span>
+                  <strong className={transaction.amount > 0 ? "positive" : ""}>
+                    {formatCurrency(transaction.amount)}
+                  </strong>
+                </div>
+              ))
+            ) : (
+              <p className="empty-state">No transactions yet. Use Quick Entry to add your first one.</p>
+            )}
           </div>
         </div>
 
@@ -231,12 +255,16 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="spark-bars">
-            {netWorthTrend.map((point) => (
-              <div key={point.month}>
-                <span style={{ height: `${point.index}%` }} />
-                <small>{point.month}</small>
-              </div>
-            ))}
+            {netWorthTrend.length > 0 ? (
+              netWorthTrend.map((point) => (
+                <div key={point.month}>
+                  <span style={{ height: `${point.index}%` }} />
+                  <small>{point.month}</small>
+                </div>
+              ))
+            ) : (
+              <p className="empty-state">Your net-worth trend starts after monthly snapshots.</p>
+            )}
           </div>
         </div>
 
@@ -248,15 +276,19 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="stack">
-            {budgetSnapshot.map((budget) => (
-              <div className="goal-row" key={budget.category}>
-                <div>
-                  <strong>{budget.category}</strong>
-                  <span>{formatCurrency(budget.spent)} of {formatCurrency(budget.limit)}</span>
+            {budgetSnapshot.length > 0 ? (
+              budgetSnapshot.map((budget) => (
+                <div className="goal-row" key={budget.category}>
+                  <div>
+                    <strong>{budget.category}</strong>
+                    <span>{formatCurrency(budget.spent)} of {formatCurrency(budget.limit)}</span>
+                  </div>
+                  <ProgressBar value={Math.round((budget.spent / budget.limit) * 100)} />
                 </div>
-                <ProgressBar value={Math.round((budget.spent / budget.limit) * 100)} />
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="empty-state">No budgets yet.</p>
+            )}
           </div>
         </div>
       </section>

@@ -38,15 +38,19 @@ export default function AccountsPage() {
             <a className="primary-button link-button" href="#add-bank-account">Add bank</a>
           </div>
           <div className="stack">
-            {bankAccounts.map((account) => (
-              <div className="list-row balance-row" key={account.id}>
-                <div>
-                  <strong>{account.name}</strong>
-                  <span>{account.institution} · Updated {formatDate(account.updatedAt)}</span>
+            {bankAccounts.length > 0 ? (
+              bankAccounts.map((account) => (
+                <div className="list-row balance-row" key={account.id}>
+                  <div>
+                    <strong>{account.name}</strong>
+                    <span>{account.institution} · Updated {formatDate(account.updatedAt)}</span>
+                  </div>
+                  <b>{formatCurrency(account.balance)}</b>
                 </div>
-                <b>{formatCurrency(account.balance)}</b>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="empty-state">No bank accounts yet. Add your first bank below.</p>
+            )}
           </div>
         </div>
 
@@ -59,15 +63,19 @@ export default function AccountsPage() {
             <span className="pill">{formatCurrency(investmentValue)}</span>
           </div>
           <div className="stack">
-            {investments.map((investment) => (
-              <div className="list-row balance-row" key={investment.name}>
-                <div>
-                  <strong>{investment.name}</strong>
-                  <span>{investment.provider} · Invested {formatCurrency(investment.investedAmount)}</span>
+            {investments.length > 0 ? (
+              investments.map((investment) => (
+                <div className="list-row balance-row" key={investment.name}>
+                  <div>
+                    <strong>{investment.name}</strong>
+                    <span>{investment.provider} · Invested {formatCurrency(investment.investedAmount)}</span>
+                  </div>
+                  <b>{formatCurrency(investment.currentValue)}</b>
                 </div>
-                <b>{formatCurrency(investment.currentValue)}</b>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="empty-state">No investments yet.</p>
+            )}
           </div>
         </div>
       </section>
@@ -81,21 +89,25 @@ export default function AccountsPage() {
           <a className="primary-button link-button" href="#add-bank-account">Add account</a>
         </div>
         <div className="account-grid">
-          {accounts.map((account) => (
-            <article className="account-card" key={account.id}>
-              <div>
-                <span className="account-type">{account.type}</span>
-                <h3>{account.name}</h3>
-              </div>
-              <strong className={account.balance < 0 ? "negative" : ""}>
-                {formatCurrency(account.balance)}
-              </strong>
-              <footer>
-                <span>{account.institution}</span>
-                <span>Updated {formatDate(account.updatedAt)}</span>
-              </footer>
-            </article>
-          ))}
+          {accounts.length > 0 ? (
+            accounts.map((account) => (
+              <article className="account-card" key={account.id}>
+                <div>
+                  <span className="account-type">{account.type}</span>
+                  <h3>{account.name}</h3>
+                </div>
+                <strong className={account.balance < 0 ? "negative" : ""}>
+                  {formatCurrency(account.balance)}
+                </strong>
+                <footer>
+                  <span>{account.institution}</span>
+                  <span>Updated {formatDate(account.updatedAt)}</span>
+                </footer>
+              </article>
+            ))
+          ) : (
+            <p className="empty-state">Your account cards will appear here.</p>
+          )}
         </div>
       </section>
 

@@ -7,8 +7,15 @@ import {
   readLocalBankAccounts,
   type LocalBankAccount,
 } from "@/lib/local-finance";
+import {
+  getSupabaseBrowserClient,
+  getSupabaseUser,
+  isSupabaseConfigured,
+  type DbAccount,
+} from "@/lib/supabase-client";
 
 export function AddBankAccountForm() {
+  const [isDatabaseMode, setIsDatabaseMode] = useState(false);
   const [accounts, setAccounts] = useState<LocalBankAccount[]>(() => {
     if (typeof window === "undefined") {
       return [];
@@ -23,25 +30,87 @@ export function AddBankAccountForm() {
   });
 
   useEffect(() => {
-    window.localStorage.setItem(bankAccountsStorageKey, JSON.stringify(accounts));
-  }, [accounts]);
+    async function loadDatabaseAccounts() {
+      const supabase = getSupabaseBrowserClient();
+      const user = await getSupabaseUser();
+      if (!supabase || !user) {
+        return;
+      }
 
-  function saveBankAccount() {
+      setIsDatabaseMode(true);
+      const { data } = await supabase
+        .from("accounts")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      setAccounts(
+        ((data ?? []) as DbAccount[]).map((account) => ({
+          id: account.id,
+          accountName: account.account_name,
+          accountType: account.account_type,
+          bankName: account.bank_name,
+          openingBalance: Number(account.opening_balance),
+        })),
+      );
+    }
+
+    loadDatabaseAccounts();
+  }, []);
+
+  useEffect(() => {
+    if (!isDatabaseMode) {
+      window.localStorage.setItem(bankAccountsStorageKey, JSON.stringify(accounts));
+    }
+  }, [accounts, isDatabaseMode]);
+
+  async function saveBankAccount() {
     const balance = Number(draft.openingBalance);
     if (!draft.bankName.trim() || !draft.accountName.trim() || Number.isNaN(balance)) {
       return;
     }
 
-    setAccounts((current) => [
-      {
-        id: crypto.randomUUID(),
-        bankName: draft.bankName.trim(),
-        accountName: draft.accountName.trim(),
-        accountType: draft.accountType,
-        openingBalance: balance,
-      },
-      ...current,
-    ]);
+    const supabase = getSupabaseBrowserClient();
+    const user = await getSupabaseUser();
+    if (supabase && user) {
+      const { data, error } = await supabase
+        .from("accounts")
+        .insert({
+          account_name: draft.accountName.trim(),
+          account_type: draft.accountType,
+          bank_name: draft.bankName.trim(),
+          opening_balance: balance,
+          user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        const account = data as DbAccount;
+        setIsDatabaseMode(true);
+        setAccounts((current) => [
+          {
+            id: account.id,
+            bankName: account.bank_name,
+            accountName: account.account_name,
+            accountType: account.account_type,
+            openingBalance: Number(account.opening_balance),
+          },
+          ...current,
+        ]);
+      }
+    } else {
+      setAccounts((current) => [
+        {
+          id: crypto.randomUUID(),
+          bankName: draft.bankName.trim(),
+          accountName: draft.accountName.trim(),
+          accountType: draft.accountType,
+          openingBalance: balance,
+        },
+        ...current,
+      ]);
+    }
+
     setDraft({
       bankName: "",
       accountName: "",
@@ -102,7 +171,12 @@ export function AddBankAccountForm() {
         </button>
         <button
           className="ghost-button big"
-          onClick={() => {
+          onClick={async () => {
+            const supabase = getSupabaseBrowserClient();
+            const user = await getSupabaseUser();
+            if (supabase && user) {
+              await supabase.from("accounts").delete().eq("user_id", user.id);
+            }
             window.localStorage.removeItem(bankAccountsStorageKey);
             setAccounts([]);
           }}
@@ -111,6 +185,13 @@ export function AddBankAccountForm() {
           Clear saved banks
         </button>
       </div>
+      <p className="empty-state">
+        {isDatabaseMode
+          ? "Saving to your signed-in database workspace."
+          : isSupabaseConfigured()
+            ? "Sign in to save these accounts to your database."
+            : "Saving privately in this browser until Supabase is configured."}
+      </p>
       {accounts.length > 0 ? (
         <div className="local-bank-list">
           {accounts.map((account) => (

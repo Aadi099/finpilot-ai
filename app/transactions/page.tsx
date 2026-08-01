@@ -1,6 +1,5 @@
 import { AppShell } from "@/components/AppShell";
-import { transactions } from "@/lib/sample-data";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { TransactionsList } from "@/components/transactions/TransactionsList";
 
 export default function TransactionsPage() {
   return (
@@ -26,29 +25,7 @@ export default function TransactionsPage() {
           </div>
         </div>
         <div className="transaction-list">
-          {transactions.length > 0 ? (
-            transactions.map((transaction) => (
-              <article className="transaction-card" key={transaction.id}>
-                <div>
-                  <strong>{transaction.merchant}</strong>
-                  <span>{transaction.category} · {transaction.account}</span>
-                </div>
-                <div>
-                  <strong className={transaction.amount > 0 ? "positive" : transaction.type === "transfer" ? "neutral" : ""}>
-                    {formatCurrency(transaction.amount)}
-                  </strong>
-                  <span>
-                    {formatDate(transaction.date)} · {transaction.time} · balance{" "}
-                    {formatCurrency(transaction.runningBalance)}
-                  </span>
-                </div>
-                <span className="payment-chip">{transaction.paymentMethod}</span>
-                <span className={`status ${transaction.type}`}>{transaction.type}</span>
-              </article>
-            ))
-          ) : (
-            <p className="empty-state">No transactions yet. Start with Quick Entry.</p>
-          )}
+          <TransactionsList />
         </div>
       </section>
     </AppShell>

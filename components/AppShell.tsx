@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthChip } from "@/components/AuthChip";
 import { getCurrentUser } from "@/lib/auth";
 
 const navItems = [
@@ -51,13 +52,7 @@ export function AppShell({
             <span>Workspace</span>
             <strong>{user.workspaceName}</strong>
           </div>
-          <Link className="user-chip" href="/sign-in">
-            <span>{user.initials}</span>
-            <div>
-              <strong>{user.name}</strong>
-              <small>{user.authProvider}</small>
-            </div>
-          </Link>
+          <AuthChip />
         </header>
         {children}
       </main>

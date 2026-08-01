@@ -9,13 +9,58 @@ import {
   type LocalBankAccount,
   type LocalQuickEntry,
 } from "@/lib/local-finance";
+import {
+  getSupabaseBrowserClient,
+  getSupabaseUser,
+  isSupabaseConfigured,
+  type DbAccount,
+  type DbTransaction,
+} from "@/lib/supabase-client";
 
 export function LocalDashboardBalances() {
   const [accounts, setAccounts] = useState<LocalBankAccount[]>([]);
   const [entries, setEntries] = useState<LocalQuickEntry[]>([]);
+  const [mode, setMode] = useState<"local" | "database" | "setup">("local");
 
   useEffect(() => {
-    function refresh() {
+    async function refresh() {
+      const supabase = getSupabaseBrowserClient();
+      const user = await getSupabaseUser();
+
+      if (supabase && user) {
+        setMode("database");
+        const [{ data: accountData }, { data: transactionData }] = await Promise.all([
+          supabase.from("accounts").select("*").order("created_at", { ascending: false }),
+          supabase.from("transactions").select("*").order("transaction_date", { ascending: false }),
+        ]);
+
+        setAccounts(
+          ((accountData ?? []) as DbAccount[]).map((account) => ({
+            id: account.id,
+            accountName: account.account_name,
+            accountType: account.account_type,
+            bankName: account.bank_name,
+            openingBalance: Number(account.opening_balance),
+          })),
+        );
+        setEntries(
+          ((transactionData ?? []) as DbTransaction[]).map((transaction) => ({
+            id: transaction.id,
+            account: transaction.account_name,
+            amount: Number(transaction.amount),
+            category: transaction.category,
+            name: transaction.name,
+            note: transaction.notes ?? "",
+            paidDate: transaction.paid_date ?? "",
+            paymentMethod: transaction.payment_method,
+            transactionDate: transaction.transaction_date,
+            type: transaction.type,
+          })),
+        );
+        return;
+      }
+
+      setMode(isSupabaseConfigured() ? "setup" : "local");
       setAccounts(readLocalBankAccounts());
       setEntries(readLocalQuickEntries());
     }
@@ -80,6 +125,13 @@ export function LocalDashboardBalances() {
           <div>
             <p className="eyebrow">Current balances</p>
             <h2>Banks and local entries</h2>
+            <p className="empty-state">
+              {mode === "database"
+                ? "Synced with your signed-in database."
+                : mode === "setup"
+                  ? "Sign in to sync with your database, or continue locally."
+                  : "Using private browser storage."}
+            </p>
           </div>
           <a className="primary-button link-button" href="/accounts#add-bank-account">
             Add bank

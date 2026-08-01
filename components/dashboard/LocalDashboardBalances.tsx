@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import {
   calculateAccountBalance,
   readLocalBankAccounts,
@@ -93,13 +93,13 @@ export function LocalDashboardBalances() {
   const expenses = entries
     .filter((entry) => entry.type === "expense")
     .reduce((total, entry) => total + entry.amount, 0);
-  const savingsRate = income > 0 ? (income - expenses) / income : 0;
+  const netActivity = income - expenses;
 
   return (
     <>
       <section className="metric-grid">
         <article className="metric-card">
-          <span>Monthly income</span>
+          <span>Money in</span>
           <strong>{formatCurrency(income)}</strong>
           <small className="good">{entries.length} entries</small>
         </article>
@@ -109,14 +109,16 @@ export function LocalDashboardBalances() {
           <small className="good">{accounts.length} banks</small>
         </article>
         <article className="metric-card">
-          <span>Expenses</span>
+          <span>Money out</span>
           <strong>{formatCurrency(expenses)}</strong>
-          <small className="warn">{expenses > 0 ? "Tracked locally" : "No spends yet"}</small>
+          <small className="warn">{expenses > 0 ? "Tracked this month" : "No spends yet"}</small>
         </article>
         <article className="metric-card">
-          <span>Savings rate</span>
-          <strong>{formatPercent(savingsRate)}</strong>
-          <small className="good">From saved entries</small>
+          <span>Net activity</span>
+          <strong>{formatCurrency(netActivity)}</strong>
+          <small className={netActivity >= 0 ? "good" : "warn"}>
+            {netActivity >= 0 ? "Cash added" : "Cash used"}
+          </small>
         </article>
       </section>
 
@@ -124,7 +126,7 @@ export function LocalDashboardBalances() {
         <div className="panel-heading">
           <div>
             <p className="eyebrow">Current balances</p>
-            <h2>Banks and local entries</h2>
+            <h2>Banks and activity</h2>
             <p className="empty-state">
               {mode === "database"
                 ? "Synced with your signed-in database."
@@ -152,8 +154,8 @@ export function LocalDashboardBalances() {
             )}
           </div>
           <div>
-            <span>Local activity</span>
-            <strong>{formatCurrency(income - expenses)}</strong>
+            <span>Month movement</span>
+            <strong>{formatCurrency(netActivity)}</strong>
             <small>Income: {formatCurrency(income)}</small>
             <small>Expenses: {formatCurrency(expenses)}</small>
           </div>

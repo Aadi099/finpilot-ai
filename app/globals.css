@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f7fb;
-  --foreground: #172033;
-  --muted: #637083;
-  --line: #d9e0ea;
+  --background: #f4f6f8;
+  --foreground: #111827;
+  --muted: #667085;
+  --line: #d8dee8;
   --panel: #ffffff;
-  --panel-soft: #edf4f8;
-  --primary: #2563eb;
-  --primary-dark: #1e3a8a;
+  --panel-soft: #f1f5f9;
+  --primary: #176b87;
+  --primary-dark: #0f3f55;
+  --accent: #c88a2a;
   --success: #047857;
   --warning: #b45309;
   --danger: #b91c1c;
+  --shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
 }
 
 @theme inline {
@@ -43,17 +45,20 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: 240px minmax(0, 1fr);
   min-height: 100vh;
 }
 
 .sidebar {
-  background: #102035;
+  background: #0d1b2a;
   color: #f8fafc;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 24px;
+  gap: 22px;
+  min-height: 100vh;
+  padding: 22px 18px;
+  position: sticky;
+  top: 0;
 }
 
 .brand {
@@ -67,7 +72,7 @@ button {
   align-items: center;
   background: #f8fafc;
   border-radius: 8px;
-  color: #102035;
+  color: #0d1b2a;
   display: inline-flex;
   font-weight: 800;
   height: 40px;
@@ -77,14 +82,15 @@ button {
 
 .sidebar nav {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .sidebar nav a {
-  border-radius: 8px;
+  border-radius: 7px;
   color: #bfccd9;
-  min-height: 40px;
-  padding: 10px 12px;
+  font-size: 0.95rem;
+  min-height: 38px;
+  padding: 9px 12px;
 }
 
 .sidebar nav a.active,
@@ -94,15 +100,20 @@ button {
 }
 
 .main-surface {
-  display: grid;
-  gap: 24px;
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1560px;
+  min-width: 0;
+  padding: 22px 28px 40px;
+  width: 100%;
 }
 
 .topbar {
   align-items: center;
   display: flex;
   justify-content: space-between;
+  min-height: 50px;
 }
 
 .topbar > div,
@@ -123,39 +134,68 @@ button {
   color: var(--muted);
 }
 
+.topbar > div {
+  min-width: 0;
+}
+
+.topbar > div strong {
+  display: block;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
 .user-chip {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  min-width: 0;
   padding: 8px 12px 8px 8px;
 }
 
+.user-chip > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-chip strong,
+.user-chip small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .hero-panel {
-  align-items: end;
+  align-items: center;
   background:
-    linear-gradient(135deg, rgba(37, 99, 235, 0.92), rgba(5, 150, 105, 0.9)),
-    #1f3f74;
+    linear-gradient(135deg, rgba(15, 63, 85, 0.96), rgba(23, 107, 135, 0.9)),
+    #0f3f55;
   border-radius: 8px;
+  box-shadow: var(--shadow);
   color: #ffffff;
   display: grid;
-  gap: 32px;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  padding: 34px;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  min-height: 176px;
+  padding: 24px;
 }
 
 .hero-panel h1,
 .page-heading h1 {
-  font-size: clamp(2rem, 5vw, 4.4rem);
+  font-size: clamp(2rem, 4vw, 3.4rem);
   letter-spacing: 0;
-  line-height: 0.98;
-  margin: 8px 0 14px;
+  line-height: 1;
+  margin: 8px 0 10px;
 }
 
 .hero-copy {
   color: #e6eef8;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  max-width: 760px;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 600px;
 }
 
 .net-worth {
@@ -183,8 +223,8 @@ button {
 
 .metric-grid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
 }
 
 .metric-grid.compact {
@@ -199,13 +239,16 @@ button {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
 }
 
 .metric-card {
   display: grid;
-  gap: 10px;
-  min-height: 132px;
-  padding: 20px;
+  gap: 8px;
+  min-height: 118px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 18px;
 }
 
 .metric-card span {
@@ -214,8 +257,10 @@ button {
 }
 
 .metric-card strong {
-  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  font-size: clamp(1.45rem, 2.2vw, 2.05rem);
   letter-spacing: 0;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
 }
 
 .metric-card small.good,
@@ -230,11 +275,12 @@ button {
 
 .dashboard-grid {
   display: grid;
-  gap: 16px;
+  gap: 14px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .panel {
+  min-width: 0;
   padding: 20px;
 }
 
@@ -658,6 +704,7 @@ button {
   border-radius: 8px;
   display: grid;
   gap: 8px;
+  min-width: 0;
   padding: 18px;
 }
 
@@ -667,7 +714,13 @@ button {
 }
 
 .balance-split strong {
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-size: clamp(1.65rem, 3vw, 2.45rem);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.mobile-nav {
+  display: none;
 }
 
 .add-bank-panel {
@@ -760,20 +813,20 @@ button {
   width: 100%;
 }
 
-@media (max-width: 1120px) {
+@media (max-width: 1180px) {
   .app-shell {
     grid-template-columns: 1fr;
   }
 
   .sidebar {
+    min-height: auto;
     position: static;
   }
 
   .sidebar nav {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 
-  .hero-panel,
   .dashboard-grid,
   .metric-grid,
   .metric-grid.compact,
@@ -784,15 +837,56 @@ button {
     grid-template-columns: 1fr 1fr;
   }
 
+  .hero-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  }
+
   .wide {
     grid-column: span 2;
   }
 }
 
 @media (max-width: 720px) {
-  .main-surface,
+  body {
+    background: #f7f9fb;
+  }
+
+  .app-shell {
+    display: block;
+    min-height: 100vh;
+  }
+
   .sidebar {
-    padding: 16px;
+    display: none;
+  }
+
+  .main-surface {
+    gap: 14px;
+    padding: 14px 14px 86px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    background: rgba(247, 249, 251, 0.92);
+    flex-direction: column;
+    gap: 10px;
+    margin: -14px -14px 0;
+    padding: 12px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .topbar > div {
+    display: none;
+  }
+
+  .user-chip {
+    width: 100%;
+  }
+
+  .user-chip > div {
+    min-width: 0;
   }
 
   .sidebar nav,
@@ -809,6 +903,34 @@ button {
   .balance-split,
   .bank-form {
     grid-template-columns: 1fr;
+  }
+
+  .hero-panel {
+    gap: 16px;
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .hero-panel h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-copy {
+    font-size: 0.95rem;
+  }
+
+  .metric-grid {
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric-card {
+    min-height: 108px;
+    padding: 14px;
+  }
+
+  .metric-card strong {
+    font-size: clamp(1.35rem, 8vw, 1.85rem);
   }
 
   .wide {
@@ -832,9 +954,51 @@ button {
     justify-self: start;
   }
 
-  .topbar {
+  .panel {
+    padding: 16px;
+  }
+
+  .panel-heading {
     align-items: stretch;
     flex-direction: column;
     gap: 12px;
+  }
+
+  .panel-heading .primary-button {
+    width: 100%;
+  }
+
+  .balance-split strong {
+    font-size: clamp(1.6rem, 10vw, 2.25rem);
+  }
+
+  .mobile-nav {
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid var(--line);
+    bottom: 0;
+    box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    left: 0;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    position: fixed;
+    right: 0;
+    z-index: 20;
+  }
+
+  .mobile-nav a {
+    align-items: center;
+    border-radius: 8px;
+    color: var(--muted);
+    display: flex;
+    font-size: 0.82rem;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .mobile-nav a.active {
+    background: #e8f3f6;
+    color: var(--primary-dark);
   }
 }

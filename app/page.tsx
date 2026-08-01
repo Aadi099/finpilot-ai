@@ -33,18 +33,17 @@ export default function DashboardPage() {
     <AppShell active="Dashboard">
       <section className="hero-panel">
         <div>
-          <p className="eyebrow">Phase 1 foundation</p>
-          <h1>FinPilot AI</h1>
+          <p className="eyebrow">Personal finance</p>
+          <h1>Dashboard</h1>
           <p className="hero-copy">
-            A production-ready personal finance and investment operating system,
-            starting with real screens, typed data, auth scaffolding, and a Postgres
-            model ready for the next phase.
+            Track bank balance, daily spends, incoming money, and month movement
+            from one clean workspace.
           </p>
         </div>
         <div className="net-worth">
           <span>Total net worth</span>
           <strong>{formatCurrency(netWorth)}</strong>
-          <small>Ready for your first entries</small>
+          <small>Bank, cash, investments, and liabilities</small>
         </div>
       </section>
 

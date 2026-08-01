@@ -1,21 +1,18 @@
 import Link from "next/link";
 import { AuthChip } from "@/components/AuthChip";
-import { getCurrentUser } from "@/lib/auth";
 
 const navItems = [
-  { label: "Dashboard", href: "/" },
-  { label: "Quick Entry", href: "/quick-entry" },
-  { label: "Accounts", href: "/accounts" },
-  { label: "Transactions", href: "/transactions" },
-  { label: "Budget", href: "#" },
-  { label: "Investments", href: "#" },
-  { label: "Goals", href: "#" },
-  { label: "Loans", href: "#" },
-  { label: "Bills", href: "#" },
-  { label: "Reports", href: "#" },
-  { label: "AI Assistant", href: "#" },
-  { label: "Settings", href: "#" },
+  { label: "Dashboard", short: "Home", href: "/" },
+  { label: "Quick Entry", short: "Entry", href: "/quick-entry" },
+  { label: "Accounts", short: "Banks", href: "/accounts" },
+  { label: "Transactions", short: "Ledger", href: "/transactions" },
+  { label: "Budget", short: "Budget", href: "#" },
+  { label: "Investments", short: "Invest", href: "#" },
+  { label: "Reports", short: "Reports", href: "#" },
+  { label: "Settings", short: "Settings", href: "#" },
 ];
+
+const mobileNavItems = navItems.slice(0, 4);
 
 export function AppShell({
   active,
@@ -24,14 +21,12 @@ export function AppShell({
   active: string;
   children: React.ReactNode;
 }>) {
-  const user = getCurrentUser();
-
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <Link href="/" className="brand" aria-label="FinPilot AI home">
           <span>FP</span>
-          <strong>FinPilot AI</strong>
+          <strong>FinPilot</strong>
         </Link>
         <nav aria-label="Primary navigation">
           {navItems.map((item) => (
@@ -50,12 +45,24 @@ export function AppShell({
         <header className="topbar">
           <div>
             <span>Workspace</span>
-            <strong>{user.workspaceName}</strong>
+            <strong>{active}</strong>
           </div>
           <AuthChip />
         </header>
         {children}
       </main>
+      <nav className="mobile-nav" aria-label="Mobile navigation">
+        {mobileNavItems.map((item) => (
+          <Link
+            aria-current={active === item.label ? "page" : undefined}
+            className={active === item.label ? "active" : ""}
+            href={item.href}
+            key={item.label}
+          >
+            <span>{item.short}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

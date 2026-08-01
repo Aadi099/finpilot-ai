@@ -4,6 +4,7 @@ export const accounts: Array<{
   type: string;
   kind: string;
   institution: string;
+  openingBalance: number;
   balance: number;
   updatedAt: string;
 }> = [];
@@ -19,6 +20,8 @@ export const transactions: Array<{
   paidDate: string;
   paymentMethod: string;
   source: string;
+  time: string;
+  runningBalance: number;
 }> = [];
 
 export const categories = [

@@ -37,7 +37,10 @@ export default function TransactionsPage() {
                   <strong className={transaction.amount > 0 ? "positive" : transaction.type === "transfer" ? "neutral" : ""}>
                     {formatCurrency(transaction.amount)}
                   </strong>
-                  <span>{formatDate(transaction.date)} · paid {formatDate(transaction.paidDate)}</span>
+                  <span>
+                    {formatDate(transaction.date)} · {transaction.time} · balance{" "}
+                    {formatCurrency(transaction.runningBalance)}
+                  </span>
                 </div>
                 <span className="payment-chip">{transaction.paymentMethod}</span>
                 <span className={`status ${transaction.type}`}>{transaction.type}</span>

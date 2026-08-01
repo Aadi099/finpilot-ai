@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { accounts, categories, paymentMethods } from "@/lib/sample-data";
+import { categories, paymentMethods } from "@/lib/sample-data";
 import { formatCurrency } from "@/lib/format";
+import {
+  quickEntriesStorageKey,
+  readLocalBankAccounts,
+  readLocalQuickEntries,
+  type LocalBankAccount,
+} from "@/lib/local-finance";
 
 type EntryType = "expense" | "income" | "transfer";
 
@@ -37,16 +43,30 @@ const defaultEntry: QuickEntry = {
 export function QuickEntryForm() {
   const [entry, setEntry] = useState<QuickEntry>(defaultEntry);
   const [savedEntries, setSavedEntries] = useState<QuickEntry[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-    const stored = window.localStorage.getItem("finpilot.quickEntries");
-    return stored ? JSON.parse(stored) : [];
+    return readLocalQuickEntries();
+  });
+  const [localAccounts, setLocalAccounts] = useState<LocalBankAccount[]>(() => {
+    return readLocalBankAccounts();
   });
 
   useEffect(() => {
-    window.localStorage.setItem("finpilot.quickEntries", JSON.stringify(savedEntries));
+    window.localStorage.setItem(quickEntriesStorageKey, JSON.stringify(savedEntries));
   }, [savedEntries]);
+
+  useEffect(() => {
+    function refreshAccounts() {
+      setLocalAccounts(readLocalBankAccounts());
+    }
+
+    refreshAccounts();
+    window.addEventListener("focus", refreshAccounts);
+    window.addEventListener("storage", refreshAccounts);
+
+    return () => {
+      window.removeEventListener("focus", refreshAccounts);
+      window.removeEventListener("storage", refreshAccounts);
+    };
+  }, []);
 
   const totalToday = useMemo(
     () =>
@@ -176,8 +196,8 @@ export function QuickEntryForm() {
             value={entry.account}
           >
             <option value="">Select account after adding one</option>
-            {accounts.map((account) => (
-              <option key={account.id}>{account.name}</option>
+            {localAccounts.map((account) => (
+              <option key={account.id}>{account.accountName}</option>
             ))}
           </select>
         </label>
@@ -198,7 +218,7 @@ export function QuickEntryForm() {
         <button
           className="ghost-button big"
           onClick={() => {
-            window.localStorage.removeItem("finpilot.quickEntries");
+            window.localStorage.removeItem(quickEntriesStorageKey);
             setSavedEntries([]);
           }}
           type="button"

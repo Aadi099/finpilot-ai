@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/AppShell";
-import { MetricCard } from "@/components/MetricCard";
+import { LocalDashboardBalances } from "@/components/dashboard/LocalDashboardBalances";
 import { ProgressBar } from "@/components/ProgressBar";
 import {
   accounts,
@@ -25,21 +25,9 @@ export default function DashboardPage() {
     sumBy(accounts.filter((account) => account.kind === "loan"), "balance"),
   );
   const netWorth = totalAssets - liabilities;
-  const monthlyIncome = sumBy(
-    transactions.filter((transaction) => transaction.type === "income"),
-    "amount",
-  );
-  const monthlyExpenses = Math.abs(
-    sumBy(transactions.filter((transaction) => transaction.type === "expense"), "amount"),
-  );
   const investmentValue = sumBy(investments, "currentValue");
-  const investedAmount = sumBy(investments, "investedAmount");
-  const unrealizedGain = investmentValue - investedAmount;
-  const savingsRate = monthlyIncome > 0 ? (monthlyIncome - monthlyExpenses) / monthlyIncome : 0;
   const upcomingBills = bills.filter((bill) => bill.status === "upcoming");
   const monthSetup = monthlySnapshots[0];
-  const bankAccounts = accounts.filter((account) => account.kind === "bank");
-  const bankBalance = sumBy(bankAccounts, "balance");
 
   return (
     <AppShell active="Dashboard">
@@ -60,53 +48,14 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="metric-grid">
-        <MetricCard label="Monthly income" value={formatCurrency(monthlyIncome)} trend="+6.2%" />
-        <MetricCard label="Bank balance" value={formatCurrency(bankBalance)} trend={`${bankAccounts.length} banks`} />
-        <MetricCard label="Expenses" value={formatCurrency(monthlyExpenses)} trend="No spends yet" tone="warn" />
-        <MetricCard label="Investments" value={formatCurrency(investmentValue)} trend={formatCurrency(unrealizedGain)} />
-      </section>
+      <LocalDashboardBalances />
 
       <section className="dashboard-grid">
-        <div className="panel wide">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Current balances</p>
-              <h2>Banks and investments</h2>
-            </div>
-            <a className="primary-button link-button" href="/accounts#add-bank-account">Add bank</a>
-          </div>
-          <div className="balance-split">
-            <div>
-              <span>Total bank balance</span>
-              <strong>{formatCurrency(bankBalance)}</strong>
-              {bankAccounts.length > 0 ? (
-                bankAccounts.map((account) => (
-                  <small key={account.id}>{account.name}: {formatCurrency(account.balance)}</small>
-                ))
-              ) : (
-                <small>Add your first bank account to begin.</small>
-              )}
-            </div>
-            <div>
-              <span>Total investment value</span>
-              <strong>{formatCurrency(investmentValue)}</strong>
-              {investments.length > 0 ? (
-                investments.slice(0, 3).map((investment) => (
-                  <small key={investment.name}>{investment.name}: {formatCurrency(investment.currentValue)}</small>
-                ))
-              ) : (
-                <small>Add your opening investment value this month.</small>
-              )}
-            </div>
-          </div>
-        </div>
-
         <div className="panel quick-action-panel">
           <div>
             <p className="eyebrow">Month health</p>
             <h2>Savings rate</h2>
-            <p>{formatPercent(savingsRate)} after tracked expenses this month.</p>
+            <p>{formatPercent(0)} until you add income and expenses.</p>
           </div>
         </div>
 

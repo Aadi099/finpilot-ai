@@ -2,38 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/format";
-
-type LocalBankAccount = {
-  id: string;
-  bankName: string;
-  accountName: string;
-  accountType: string;
-  currentBalance: number;
-};
-
-const storageKey = "finpilot.bankAccounts";
+import {
+  bankAccountsStorageKey,
+  readLocalBankAccounts,
+  type LocalBankAccount,
+} from "@/lib/local-finance";
 
 export function AddBankAccountForm() {
   const [accounts, setAccounts] = useState<LocalBankAccount[]>(() => {
     if (typeof window === "undefined") {
       return [];
     }
-    const stored = window.localStorage.getItem(storageKey);
-    return stored ? JSON.parse(stored) : [];
+    return readLocalBankAccounts();
   });
   const [draft, setDraft] = useState({
     bankName: "",
     accountName: "",
     accountType: "Savings",
-    currentBalance: "",
+    openingBalance: "",
   });
 
   useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify(accounts));
+    window.localStorage.setItem(bankAccountsStorageKey, JSON.stringify(accounts));
   }, [accounts]);
 
   function saveBankAccount() {
-    const balance = Number(draft.currentBalance);
+    const balance = Number(draft.openingBalance);
     if (!draft.bankName.trim() || !draft.accountName.trim() || Number.isNaN(balance)) {
       return;
     }
@@ -44,7 +38,7 @@ export function AddBankAccountForm() {
         bankName: draft.bankName.trim(),
         accountName: draft.accountName.trim(),
         accountType: draft.accountType,
-        currentBalance: balance,
+        openingBalance: balance,
       },
       ...current,
     ]);
@@ -52,7 +46,7 @@ export function AddBankAccountForm() {
       bankName: "",
       accountName: "",
       accountType: "Savings",
-      currentBalance: "",
+      openingBalance: "",
     });
   }
 
@@ -94,13 +88,13 @@ export function AddBankAccountForm() {
           </select>
         </label>
         <label>
-          <span>Current balance</span>
+          <span>Opening balance</span>
           <input
             inputMode="decimal"
-            onChange={(event) => setDraft((current) => ({ ...current, currentBalance: event.target.value }))}
+            onChange={(event) => setDraft((current) => ({ ...current, openingBalance: event.target.value }))}
             placeholder="0"
             type="number"
-            value={draft.currentBalance}
+            value={draft.openingBalance}
           />
         </label>
         <button className="primary-button big" onClick={saveBankAccount} type="button">
@@ -109,7 +103,7 @@ export function AddBankAccountForm() {
         <button
           className="ghost-button big"
           onClick={() => {
-            window.localStorage.removeItem(storageKey);
+            window.localStorage.removeItem(bankAccountsStorageKey);
             setAccounts([]);
           }}
           type="button"
@@ -125,7 +119,7 @@ export function AddBankAccountForm() {
                 <strong>{account.accountName}</strong>
                 <span>{account.bankName} · {account.accountType}</span>
               </div>
-              <b>{formatCurrency(account.currentBalance)}</b>
+              <b>{formatCurrency(account.openingBalance)}</b>
             </div>
           ))}
         </div>

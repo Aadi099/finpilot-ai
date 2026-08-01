@@ -43,7 +43,10 @@ export default function AccountsPage() {
                 <div className="list-row balance-row" key={account.id}>
                   <div>
                     <strong>{account.name}</strong>
-                    <span>{account.institution} · Updated {formatDate(account.updatedAt)}</span>
+                    <span>
+                      Opening {formatCurrency(account.openingBalance)} · Updated{" "}
+                      {formatDate(account.updatedAt)}
+                    </span>
                   </div>
                   <b>{formatCurrency(account.balance)}</b>
                 </div>
@@ -100,7 +103,7 @@ export default function AccountsPage() {
                   {formatCurrency(account.balance)}
                 </strong>
                 <footer>
-                  <span>{account.institution}</span>
+                  <span>Opening {formatCurrency(account.openingBalance)}</span>
                   <span>Updated {formatDate(account.updatedAt)}</span>
                 </footer>
               </article>

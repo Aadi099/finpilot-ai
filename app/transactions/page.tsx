@@ -21,7 +21,9 @@ export default function TransactionsPage() {
           </div>
           <div className="button-row">
             <button className="ghost-button">Import</button>
-            <button className="primary-button">Add transaction</button>
+            <a className="primary-button link-button" href="/quick-entry">
+              Add transaction
+            </a>
           </div>
         </div>
         <div className="transaction-list">

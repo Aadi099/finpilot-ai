@@ -46,6 +46,10 @@ export function transactionImpact(entry: LocalQuickEntry) {
     return entry.amount;
   }
 
+  if (entry.type === "transfer") {
+    return 0;
+  }
+
   return -entry.amount;
 }
 

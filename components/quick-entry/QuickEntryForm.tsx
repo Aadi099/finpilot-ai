@@ -209,6 +209,22 @@ export function QuickEntryForm() {
             </button>
           ))}
         </div>
+        <div className={`type-helper ${entry.type}`}>
+          <strong>
+            {entry.type === "expense"
+              ? "Expense reduces your balance"
+              : entry.type === "income"
+                ? "Income adds money"
+                : "Transfer moves your own money"}
+          </strong>
+          <span>
+            {entry.type === "expense"
+              ? "Use for food, bills, shopping, UPI payments, card spends, fees, and any money going out."
+              : entry.type === "income"
+                ? "Use for salary, refunds, cashbacks, interest, or money someone sends to you."
+                : "Use when moving money between your own accounts, like ICICI to wallet or bank to investment. It should not count as income or expense."}
+          </span>
+        </div>
 
         <label className="amount-field">
           <span>Amount</span>

@@ -7,7 +7,17 @@ const distRoot = path.join(root, "dist");
 const clientRoot = path.join(distRoot, "client");
 const serverEntry = pathToFileURL(path.join(distRoot, "server", "index.js"));
 
-const routes = ["/", "/accounts", "/quick-entry", "/transactions", "/sign-in"];
+const routes = [
+  "/",
+  "/accounts",
+  "/balances",
+  "/budgets",
+  "/card-dues",
+  "/quick-entry",
+  "/reports",
+  "/transactions",
+  "/sign-in",
+];
 
 async function copyClientAssetsToOutputRoot() {
   const entries = await readdir(clientRoot);

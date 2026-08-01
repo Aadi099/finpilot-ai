@@ -20,8 +20,29 @@ export type LocalQuickEntry = {
   note: string;
 };
 
+export type LocalCreditCard = {
+  id: string;
+  cardName: string;
+  bankName: string;
+  lastFour: string;
+  creditLimit: number;
+  statementDay: number;
+  dueDay: number;
+  minimumDue: number;
+  openingOutstanding: number;
+};
+
+export type LocalBudget = {
+  id: string;
+  month: string;
+  category: string;
+  limit: number;
+};
+
 export const bankAccountsStorageKey = "finpilot.bankAccounts";
 export const quickEntriesStorageKey = "finpilot.quickEntries";
+export const creditCardsStorageKey = "finpilot.creditCards";
+export const budgetsStorageKey = "finpilot.budgets";
 
 export function readLocalBankAccounts(): LocalBankAccount[] {
   if (typeof window === "undefined") {
@@ -38,6 +59,24 @@ export function readLocalQuickEntries(): LocalQuickEntry[] {
   }
 
   const stored = window.localStorage.getItem(quickEntriesStorageKey);
+  return stored ? JSON.parse(stored) : [];
+}
+
+export function readLocalCreditCards(): LocalCreditCard[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const stored = window.localStorage.getItem(creditCardsStorageKey);
+  return stored ? JSON.parse(stored) : [];
+}
+
+export function readLocalBudgets(): LocalBudget[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const stored = window.localStorage.getItem(budgetsStorageKey);
   return stored ? JSON.parse(stored) : [];
 }
 
@@ -63,4 +102,47 @@ export function calculateAccountBalance(
     .reduce((total, entry) => total + transactionImpact(entry), 0);
 
   return startingBalance + movement;
+}
+
+export function calculateCardOutstanding(
+  card: LocalCreditCard,
+  entries: LocalQuickEntry[],
+) {
+  const movement = entries
+    .filter((entry) => entry.account === card.cardName || entry.paymentMethod === card.cardName)
+    .reduce((total, entry) => {
+      if (entry.type === "expense") {
+        return total + entry.amount;
+      }
+
+      if (entry.type === "income" || entry.type === "transfer") {
+        return total - entry.amount;
+      }
+
+      return total;
+    }, 0);
+
+  return Math.max(0, card.openingOutstanding + movement);
+}
+
+export function getMonthKey(date = new Date()) {
+  return date.toISOString().slice(0, 7);
+}
+
+export function getCardCycleDates(card: LocalCreditCard, now = new Date()) {
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const statementDate = new Date(year, month, card.statementDay);
+  const dueDate =
+    card.dueDay >= card.statementDay
+      ? new Date(year, month, card.dueDay)
+      : new Date(year, month + 1, card.dueDay);
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysLeft = Math.ceil((dueDate.getTime() - now.getTime()) / msPerDay);
+
+  return {
+    daysLeft,
+    dueDate: dueDate.toISOString().slice(0, 10),
+    statementDate: statementDate.toISOString().slice(0, 10),
+  };
 }

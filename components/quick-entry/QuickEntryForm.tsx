@@ -6,8 +6,10 @@ import { formatCurrency } from "@/lib/format";
 import {
   quickEntriesStorageKey,
   readLocalBankAccounts,
+  readLocalCreditCards,
   readLocalQuickEntries,
   type LocalBankAccount,
+  type LocalCreditCard,
 } from "@/lib/local-finance";
 import {
   getSupabaseBrowserClient,
@@ -56,6 +58,9 @@ export function QuickEntryForm() {
   const [localAccounts, setLocalAccounts] = useState<LocalBankAccount[]>(() => {
     return readLocalBankAccounts();
   });
+  const [localCreditCards, setLocalCreditCards] = useState<LocalCreditCard[]>(() => {
+    return readLocalCreditCards();
+  });
 
   useEffect(() => {
     if (!isDatabaseMode) {
@@ -84,6 +89,7 @@ export function QuickEntryForm() {
             openingBalance: Number(account.opening_balance),
           })),
         );
+        setLocalCreditCards(readLocalCreditCards());
         setSavedEntries(
           ((transactionData ?? []) as DbTransaction[]).map((transaction) => ({
             id: transaction.id,
@@ -100,6 +106,7 @@ export function QuickEntryForm() {
         );
       } else {
         setLocalAccounts(readLocalBankAccounts());
+        setLocalCreditCards(readLocalCreditCards());
       }
     }
 
@@ -120,6 +127,10 @@ export function QuickEntryForm() {
         .reduce((total, item) => total + item.amount, 0),
     [savedEntries],
   );
+  const accountChoices =
+    entry.paymentMethod === "Credit Card"
+      ? localCreditCards.map((card) => ({ id: card.id, name: card.cardName }))
+      : localAccounts.map((account) => ({ id: account.id, name: account.accountName }));
 
   function updateField<K extends keyof QuickEntry>(key: K, value: QuickEntry[K]) {
     setEntry((current) => ({ ...current, [key]: value }));
@@ -293,18 +304,22 @@ export function QuickEntryForm() {
           </label>
         </div>
 
-        <label>
-          <span>Account</span>
-          <select
-            onChange={(event) => updateField("account", event.target.value)}
-            value={entry.account}
-          >
-            <option value="">Select account after adding one</option>
-            {localAccounts.map((account) => (
-              <option key={account.id}>{account.accountName}</option>
-            ))}
-          </select>
-        </label>
+          <label>
+            <span>{entry.paymentMethod === "Credit Card" ? "Credit card" : "Account"}</span>
+            <select
+              onChange={(event) => updateField("account", event.target.value)}
+              value={entry.account}
+            >
+              <option value="">
+                {entry.paymentMethod === "Credit Card"
+                  ? "Select card after adding one"
+                  : "Select account after adding one"}
+              </option>
+              {accountChoices.map((account) => (
+                <option key={account.id}>{account.name}</option>
+              ))}
+            </select>
+          </label>
 
         <label>
           <span>Note</span>

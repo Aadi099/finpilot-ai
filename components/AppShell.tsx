@@ -3,16 +3,16 @@ import { AuthChip } from "@/components/AuthChip";
 
 const navItems = [
   { label: "Dashboard", short: "Home", href: "/" },
-  { label: "Quick Entry", short: "Entry", href: "/quick-entry" },
-  { label: "Accounts", short: "Banks", href: "/accounts" },
+  { label: "Add", short: "Add", href: "/quick-entry" },
   { label: "Transactions", short: "Ledger", href: "/transactions" },
-  { label: "Budget", short: "Budget", href: "#" },
-  { label: "Investments", short: "Invest", href: "#" },
-  { label: "Reports", short: "Reports", href: "#" },
+  { label: "Balances", short: "Balances", href: "/balances" },
+  { label: "Card Dues", short: "Cards", href: "/card-dues" },
+  { label: "Budgets", short: "Budget", href: "/budgets" },
+  { label: "Reports", short: "Reports", href: "/reports" },
   { label: "Settings", short: "Settings", href: "#" },
 ];
 
-const mobileNavItems = navItems.slice(0, 4);
+const mobileNavItems = navItems.slice(0, 5);
 
 export function AppShell({
   active,

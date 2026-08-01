@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f6f8;
-  --foreground: #111827;
-  --muted: #667085;
-  --line: #d8dee8;
-  --panel: #ffffff;
-  --panel-soft: #f1f5f9;
-  --primary: #176b87;
-  --primary-dark: #0f3f55;
-  --accent: #c88a2a;
-  --success: #047857;
-  --warning: #b45309;
-  --danger: #b91c1c;
-  --shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
+  --background: #07070a;
+  --foreground: #f8fafc;
+  --muted: #a7b0c0;
+  --line: rgba(255, 255, 255, 0.12);
+  --panel: rgba(18, 18, 24, 0.78);
+  --panel-strong: rgba(28, 28, 36, 0.9);
+  --panel-soft: rgba(255, 255, 255, 0.065);
+  --primary: #ef4444;
+  --primary-dark: #fecaca;
+  --accent: #f97316;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #fb7185;
+  --shadow: 0 24px 90px rgba(0, 0, 0, 0.42);
 }
 
 @theme inline {
@@ -27,11 +28,19 @@
   box-sizing: border-box;
 }
 
-body {
+html {
   background: var(--background);
+}
+
+body {
+  background:
+    radial-gradient(circle at 78% 2%, rgba(239, 68, 68, 0.22), transparent 34rem),
+    radial-gradient(circle at 10% 18%, rgba(249, 115, 22, 0.11), transparent 26rem),
+    linear-gradient(145deg, #060609 0%, #111116 46%, #07070a 100%);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   margin: 0;
+  min-height: 100vh;
 }
 
 a {
@@ -45,18 +54,20 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-columns: 252px minmax(0, 1fr);
   min-height: 100vh;
 }
 
 .sidebar {
-  background: #0d1b2a;
+  background: rgba(7, 7, 10, 0.76);
+  border-right: 1px solid var(--line);
+  box-shadow: 18px 0 60px rgba(0, 0, 0, 0.28);
   color: #f8fafc;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 24px;
   min-height: 100vh;
-  padding: 22px 18px;
+  padding: 24px 18px;
   position: sticky;
   top: 0;
 }
@@ -70,32 +81,35 @@ button {
 .brand span,
 .user-chip > span {
   align-items: center;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #ef4444, #7f1d1d);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
-  color: #0d1b2a;
+  color: #fff7ed;
   display: inline-flex;
-  font-weight: 800;
-  height: 40px;
+  font-weight: 900;
+  height: 42px;
   justify-content: center;
-  width: 40px;
+  width: 42px;
 }
 
 .sidebar nav {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 
 .sidebar nav a {
-  border-radius: 7px;
-  color: #bfccd9;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #aeb8c8;
   font-size: 0.95rem;
-  min-height: 38px;
-  padding: 9px 12px;
+  min-height: 42px;
+  padding: 10px 12px;
 }
 
 .sidebar nav a.active,
 .sidebar nav a:hover {
-  background: #1d334e;
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(248, 113, 113, 0.22);
   color: #ffffff;
 }
 
@@ -103,17 +117,18 @@ button {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  max-width: 1560px;
+  max-width: 1600px;
   min-width: 0;
-  padding: 22px 28px 40px;
+  padding: 22px 28px 42px;
   width: 100%;
 }
 
 .topbar {
   align-items: center;
   display: flex;
+  gap: 16px;
   justify-content: space-between;
-  min-height: 50px;
+  min-height: 54px;
 }
 
 .topbar > div,
@@ -140,15 +155,15 @@ button {
 
 .topbar > div strong {
   display: block;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   line-height: 1.2;
 }
 
 .user-chip {
-  background: var(--panel);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--shadow);
   min-width: 0;
   padding: 8px 12px 8px 8px;
 }
@@ -169,38 +184,39 @@ button {
 }
 
 .hero-panel {
-  align-items: center;
+  align-items: end;
   background:
-    linear-gradient(135deg, rgba(15, 63, 85, 0.96), rgba(23, 107, 135, 0.9)),
-    #0f3f55;
+    linear-gradient(135deg, rgba(12, 12, 18, 0.9), rgba(127, 29, 29, 0.72)),
+    radial-gradient(circle at 88% 18%, rgba(249, 115, 22, 0.28), transparent 20rem);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   box-shadow: var(--shadow);
   color: #ffffff;
   display: grid;
   gap: 18px;
   grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
-  min-height: 176px;
-  padding: 24px;
+  min-height: 210px;
+  padding: 26px;
 }
 
 .hero-panel h1,
 .page-heading h1 {
-  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-size: clamp(2.15rem, 5vw, 4.4rem);
   letter-spacing: 0;
-  line-height: 1;
-  margin: 8px 0 10px;
+  line-height: 0.98;
+  margin: 8px 0 12px;
 }
 
 .hero-copy {
-  color: #e6eef8;
+  color: #dbe3ef;
   font-size: 1rem;
-  line-height: 1.5;
-  max-width: 600px;
+  line-height: 1.55;
+  max-width: 620px;
 }
 
 .net-worth {
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
   display: grid;
   gap: 8px;
@@ -208,14 +224,14 @@ button {
 }
 
 .net-worth strong {
-  font-size: clamp(1.75rem, 4vw, 2.8rem);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
   letter-spacing: 0;
 }
 
 .eyebrow {
-  color: inherit;
+  color: #fca5a5;
   font-size: 0.76rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.12em;
   margin: 0;
   text-transform: uppercase;
@@ -224,7 +240,7 @@ button {
 .metric-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
 }
 
 .metric-grid.compact {
@@ -235,17 +251,20 @@ button {
 .panel,
 .account-card,
 .transaction-card,
-.auth-card {
+.auth-card,
+.quick-card,
+.glass-card {
+  backdrop-filter: blur(22px);
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
 }
 
 .metric-card {
   display: grid;
   gap: 8px;
-  min-height: 118px;
+  min-height: 122px;
   min-width: 0;
   overflow: hidden;
   padding: 18px;
@@ -253,7 +272,7 @@ button {
 
 .metric-card span {
   color: var(--muted);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .metric-card strong {
@@ -302,18 +321,28 @@ button {
   margin: 4px 0 0;
 }
 
-.pill {
+.pill,
+.danger-pill {
   background: var(--panel-soft);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  color: var(--primary-dark);
+  color: #fee2e2;
+  display: inline-flex;
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 800;
   padding: 8px 12px;
+}
+
+.danger-pill {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(248, 113, 113, 0.24);
+  color: #fecaca;
 }
 
 .allocation-list,
 .stack,
-.transaction-list {
+.transaction-list,
+.budget-list {
   display: grid;
   gap: 12px;
 }
@@ -344,15 +373,18 @@ button {
   width: 10px;
 }
 
-.progress-track {
-  background: #e8edf4;
+.progress-track,
+.budget-track {
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   height: 10px;
   overflow: hidden;
   width: 100%;
 }
 
-.progress-track span {
+.progress-track span,
+.budget-track span {
+  background: linear-gradient(90deg, #ef4444, #f97316);
   border-radius: inherit;
   display: block;
   height: 100%;
@@ -405,7 +437,7 @@ button {
 
 .spark-bars span {
   align-self: end;
-  background: linear-gradient(180deg, #2563eb, #059669);
+  background: linear-gradient(180deg, #ef4444, #f97316);
   border-radius: 6px 6px 0 0;
   min-height: 44px;
   width: 100%;
@@ -417,7 +449,7 @@ button {
 }
 
 .page-heading {
-  max-width: 860px;
+  max-width: 880px;
 }
 
 .page-heading p {
@@ -429,19 +461,23 @@ button {
 .ghost-button {
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 750;
+  font-weight: 800;
   min-height: 42px;
   padding: 0 16px;
 }
 
 .primary-button {
-  background: var(--primary);
-  border: 1px solid var(--primary);
+  background: linear-gradient(135deg, #ef4444, #991b1b);
+  border: 1px solid rgba(248, 113, 113, 0.55);
   color: #ffffff;
 }
 
+.primary-button:hover {
+  filter: brightness(1.08);
+}
+
 .ghost-button {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--line);
   color: var(--foreground);
 }
@@ -452,25 +488,31 @@ button {
   gap: 10px;
 }
 
-.account-grid {
+.account-grid,
+.card-due-grid {
   display: grid;
   gap: 14px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.account-card {
+.account-card,
+.glass-card {
   display: grid;
-  gap: 22px;
+  gap: 18px;
+  min-width: 0;
   padding: 18px;
 }
 
-.account-card strong {
+.account-card strong,
+.glass-card strong {
   font-size: 1.65rem;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .account-card footer {
   border-top: 1px solid var(--line);
+  color: var(--muted);
   display: flex;
   font-size: 0.86rem;
   justify-content: space-between;
@@ -479,12 +521,13 @@ button {
 
 .account-type,
 .status {
-  background: var(--panel-soft);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  color: var(--primary-dark);
+  color: #fecaca;
   display: inline-flex;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 900;
   padding: 6px 10px;
   text-transform: capitalize;
 }
@@ -515,12 +558,12 @@ button {
 
 .status.transfer,
 .neutral {
-  color: var(--primary-dark);
+  color: #fecaca;
 }
 
 .payment-chip {
   align-self: center;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.07);
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--foreground);
@@ -541,14 +584,19 @@ button {
   padding: 0 12px;
 }
 
-.snapshot-grid {
+.snapshot-grid,
+.quick-links-panel {
   display: grid;
   gap: 14px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.snapshot-grid div {
-  background: var(--panel-soft);
+.snapshot-grid div,
+.quick-links-panel a,
+.balance-split > div,
+.cashflow-card {
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--line);
   border-radius: 8px;
   display: grid;
   gap: 8px;
@@ -564,6 +612,18 @@ button {
 
 .snapshot-grid strong {
   font-size: 1.35rem;
+}
+
+.quick-links-panel a {
+  min-height: 86px;
+}
+
+.quick-links-panel strong {
+  color: #fff;
+}
+
+.quick-links-panel span {
+  color: var(--muted);
 }
 
 .quick-action-panel {
@@ -591,16 +651,13 @@ button {
 }
 
 .quick-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 8px;
   display: grid;
   gap: 16px;
   padding: 18px;
 }
 
 .segmented-control {
-  background: var(--panel-soft);
+  background: rgba(255, 255, 255, 0.055);
   border: 1px solid var(--line);
   border-radius: 8px;
   display: grid;
@@ -615,15 +672,14 @@ button {
   border-radius: 7px;
   color: var(--muted);
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 900;
   min-height: 44px;
   text-transform: capitalize;
 }
 
 .segmented-control button.selected {
-  background: #ffffff;
-  color: var(--foreground);
-  box-shadow: 0 1px 8px rgba(16, 32, 53, 0.08);
+  background: rgba(239, 68, 68, 0.18);
+  color: #ffffff;
 }
 
 .type-helper {
@@ -645,36 +701,58 @@ button {
 }
 
 .type-helper.expense {
-  background: #fff7ed;
-  border-color: #fed7aa;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(248, 113, 113, 0.22);
 }
 
 .type-helper.income {
-  background: #ecfdf5;
-  border-color: #bbf7d0;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(52, 211, 153, 0.2);
 }
 
 .type-helper.transfer {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  background: rgba(249, 115, 22, 0.1);
+  border-color: rgba(251, 146, 60, 0.2);
 }
 
-.quick-card label {
+.quick-card label,
+.bank-form label,
+.card-form label,
+.budget-form label,
+.pay-form label,
+.edit-form label {
   display: grid;
   gap: 8px;
 }
 
-.quick-card label span {
+.quick-card label span,
+.bank-form label span,
+.card-form label span,
+.budget-form label span,
+.pay-form label span,
+.edit-form label span {
   color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 750;
+  font-size: 0.88rem;
+  font-weight: 800;
 }
 
 .quick-card input,
 .quick-card select,
-.quick-card textarea {
+.quick-card textarea,
+.bank-form input,
+.bank-form select,
+.card-form input,
+.card-form select,
+.budget-form input,
+.budget-form select,
+.pay-form input,
+.pay-form select,
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.month-input {
   appearance: none;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.075);
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--foreground);
@@ -684,7 +762,8 @@ button {
   width: 100%;
 }
 
-.quick-card textarea {
+.quick-card textarea,
+.edit-form textarea {
   min-height: 86px;
   padding: 12px 14px;
   resize: vertical;
@@ -692,24 +771,39 @@ button {
 
 .quick-card input:focus,
 .quick-card select:focus,
-.quick-card textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+.quick-card textarea:focus,
+.bank-form input:focus,
+.bank-form select:focus,
+.card-form input:focus,
+.card-form select:focus,
+.budget-form input:focus,
+.budget-form select:focus,
+.pay-form input:focus,
+.pay-form select:focus,
+.edit-form input:focus,
+.edit-form select:focus,
+.edit-form textarea:focus,
+.month-input:focus {
+  border-color: rgba(248, 113, 113, 0.8);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
   outline: 0;
 }
 
-.quick-card input:disabled {
-  background: #eef2f7;
+.quick-card input:disabled,
+.edit-form input:disabled {
+  background: rgba(255, 255, 255, 0.04);
   color: var(--muted);
 }
 
 .amount-field input {
   font-size: 2.2rem;
-  font-weight: 850;
+  font-weight: 900;
   min-height: 72px;
 }
 
-.form-grid {
+.form-grid,
+.pay-form,
+.budget-form {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -746,17 +840,12 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.balance-split > div {
-  background: var(--panel-soft);
-  border-radius: 8px;
-  display: grid;
-  gap: 8px;
-  min-width: 0;
-  padding: 18px;
-}
-
 .balance-split span,
-.balance-split small {
+.balance-split small,
+.glass-card span,
+.card-due-panel span,
+.budget-row span,
+.cashflow-card span {
   color: var(--muted);
 }
 
@@ -774,36 +863,17 @@ button {
   scroll-margin-top: 18px;
 }
 
-.bank-form {
+.bank-form,
+.card-form {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
 }
 
-.bank-form label {
-  display: grid;
-  gap: 8px;
-}
-
-.bank-form label span {
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 750;
-}
-
-.bank-form input,
-.bank-form select {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--foreground);
-  font: inherit;
-  min-height: 48px;
-  padding: 0 12px;
-  width: 100%;
-}
-
-.bank-form button {
+.bank-form button,
+.card-form button,
+.budget-form button,
+.pay-form button {
   align-self: end;
 }
 
@@ -822,11 +892,12 @@ button {
 }
 
 .field-list span {
-  background: var(--panel-soft);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  color: var(--primary-dark);
+  color: #fee2e2;
   font-size: 0.86rem;
-  font-weight: 750;
+  font-weight: 800;
   padding: 8px 10px;
 }
 
@@ -862,7 +933,7 @@ button {
 
 .edit-sheet {
   align-items: center;
-  background: rgba(15, 23, 42, 0.48);
+  background: rgba(0, 0, 0, 0.64);
   display: grid;
   inset: 0;
   justify-items: center;
@@ -872,10 +943,11 @@ button {
 }
 
 .edit-sheet-card {
-  background: var(--panel);
+  backdrop-filter: blur(22px);
+  background: rgba(18, 18, 24, 0.96);
   border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.22);
+  box-shadow: var(--shadow);
   display: grid;
   gap: 18px;
   max-height: min(720px, 92vh);
@@ -891,51 +963,45 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.edit-form label {
-  display: grid;
-  gap: 8px;
-}
-
-.edit-form label span {
-  color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 750;
-}
-
-.edit-form input,
-.edit-form select,
-.edit-form textarea {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--foreground);
-  font: inherit;
-  min-height: 46px;
-  padding: 0 12px;
-  width: 100%;
-}
-
-.edit-form textarea {
-  min-height: 84px;
-  padding: 12px;
-  resize: vertical;
-}
-
-.edit-form input:focus,
-.edit-form select:focus,
-.edit-form textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(23, 107, 135, 0.14);
-  outline: 0;
-}
-
-.edit-form input:disabled {
-  background: #eef2f7;
-  color: var(--muted);
-}
-
 .edit-form-wide {
   grid-column: 1 / -1;
+}
+
+.card-due-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.budget-row {
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.budget-row.over-budget {
+  border-color: rgba(248, 113, 113, 0.55);
+}
+
+.category-chart {
+  display: grid;
+  gap: 12px;
+}
+
+.category-bar {
+  display: grid;
+  gap: 7px;
+}
+
+.category-bar > div:first-child {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cashflow-card strong {
+  font-size: clamp(1.7rem, 4vw, 3rem);
 }
 
 @media (max-width: 1180px) {
@@ -949,16 +1015,18 @@ button {
   }
 
   .sidebar nav {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .dashboard-grid,
   .metric-grid,
   .metric-grid.compact,
   .account-grid,
+  .card-due-grid,
   .quick-entry-layout,
   .balance-board,
-  .bank-form {
+  .bank-form,
+  .card-form {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -972,10 +1040,6 @@ button {
 }
 
 @media (max-width: 720px) {
-  body {
-    background: #f7f9fb;
-  }
-
   .app-shell {
     display: block;
     min-height: 100vh;
@@ -987,18 +1051,19 @@ button {
 
   .main-surface {
     gap: 14px;
-    padding: 14px 14px 86px;
+    padding: 12px 12px 92px;
   }
 
   .topbar {
     align-items: stretch;
-    background: rgba(247, 249, 251, 0.92);
+    background: rgba(7, 7, 10, 0.88);
+    border: 1px solid var(--line);
+    border-radius: 8px;
     flex-direction: column;
     gap: 10px;
-    margin: -14px -14px 0;
-    padding: 12px 14px;
+    padding: 10px;
     position: sticky;
-    top: 0;
+    top: 8px;
     z-index: 5;
   }
 
@@ -1010,23 +1075,23 @@ button {
     width: 100%;
   }
 
-  .user-chip > div {
-    min-width: 0;
-  }
-
-  .sidebar nav,
   .hero-panel,
   .dashboard-grid,
   .metric-grid,
   .metric-grid.compact,
   .account-grid,
+  .card-due-grid,
   .transaction-card,
   .quick-entry-layout,
   .snapshot-grid,
+  .quick-links-panel,
   .form-grid,
+  .pay-form,
+  .budget-form,
   .balance-board,
   .balance-split,
-  .bank-form {
+  .bank-form,
+  .card-form {
     grid-template-columns: 1fr;
   }
 
@@ -1036,12 +1101,14 @@ button {
     padding: 18px;
   }
 
-  .hero-panel h1 {
-    font-size: 2.2rem;
+  .hero-panel h1,
+  .page-heading h1 {
+    font-size: 2.35rem;
   }
 
-  .hero-copy {
-    font-size: 0.95rem;
+  .hero-copy,
+  .page-heading p {
+    font-size: 0.96rem;
   }
 
   .metric-grid {
@@ -1050,12 +1117,12 @@ button {
   }
 
   .metric-card {
-    min-height: 108px;
+    min-height: 112px;
     padding: 14px;
   }
 
   .metric-card strong {
-    font-size: clamp(1.35rem, 8vw, 1.85rem);
+    font-size: clamp(1.32rem, 8vw, 1.78rem);
   }
 
   .wide {
@@ -1099,14 +1166,15 @@ button {
   }
 
   .mobile-nav {
-    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(18px);
+    background: rgba(7, 7, 10, 0.88);
     border-top: 1px solid var(--line);
     bottom: 0;
-    box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 -18px 60px rgba(0, 0, 0, 0.38);
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     left: 0;
-    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
     position: fixed;
     right: 0;
     z-index: 20;
@@ -1117,15 +1185,15 @@ button {
     border-radius: 8px;
     color: var(--muted);
     display: flex;
-    font-size: 0.82rem;
-    font-weight: 800;
+    font-size: 0.76rem;
+    font-weight: 900;
     justify-content: center;
     min-height: 44px;
   }
 
   .mobile-nav a.active {
-    background: #e8f3f6;
-    color: var(--primary-dark);
+    background: rgba(239, 68, 68, 0.18);
+    color: #fff;
   }
 
   .edit-sheet {

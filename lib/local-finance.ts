@@ -17,6 +17,7 @@ export type LocalQuickEntry = {
   paidDate: string;
   paymentMethod: string;
   account: string;
+  transferToAccount?: string;
   note: string;
 };
 
@@ -92,14 +93,33 @@ export function transactionImpact(entry: LocalQuickEntry) {
   return -entry.amount;
 }
 
+export function transactionImpactForAccount(entry: LocalQuickEntry, accountName: string) {
+  if (entry.type === "transfer") {
+    if (entry.account === accountName) {
+      return -entry.amount;
+    }
+
+    if (entry.transferToAccount === accountName) {
+      return entry.amount;
+    }
+
+    return 0;
+  }
+
+  if (entry.account !== accountName) {
+    return 0;
+  }
+
+  return transactionImpact(entry);
+}
+
 export function calculateAccountBalance(
   account: LocalBankAccount,
   entries: LocalQuickEntry[],
 ) {
   const startingBalance = account.openingBalance ?? account.currentBalance ?? 0;
   const movement = entries
-    .filter((entry) => entry.account === account.accountName)
-    .reduce((total, entry) => total + transactionImpact(entry), 0);
+    .reduce((total, entry) => total + transactionImpactForAccount(entry, account.accountName), 0);
 
   return startingBalance + movement;
 }

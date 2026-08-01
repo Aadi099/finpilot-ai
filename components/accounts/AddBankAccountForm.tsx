@@ -4,14 +4,18 @@ import { useEffect, useState } from "react";
 import { formatCurrency } from "@/lib/format";
 import {
   bankAccountsStorageKey,
+  calculateAccountBalance,
   readLocalBankAccounts,
+  readLocalQuickEntries,
   type LocalBankAccount,
+  type LocalQuickEntry,
 } from "@/lib/local-finance";
 import {
   getSupabaseBrowserClient,
   getSupabaseUser,
   isSupabaseConfigured,
   type DbAccount,
+  type DbTransaction,
 } from "@/lib/supabase-client";
 
 export function AddBankAccountForm() {
@@ -22,6 +26,7 @@ export function AddBankAccountForm() {
     }
     return readLocalBankAccounts();
   });
+  const [entries, setEntries] = useState<LocalQuickEntry[]>(() => readLocalQuickEntries());
   const [draft, setDraft] = useState({
     bankName: "",
     accountName: "",
@@ -38,18 +43,33 @@ export function AddBankAccountForm() {
       }
 
       setIsDatabaseMode(true);
-      const { data } = await supabase
-        .from("accounts")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const [{ data: accountData }, { data: transactionData }] = await Promise.all([
+        supabase.from("accounts").select("*").order("created_at", { ascending: false }),
+        supabase.from("transactions").select("*").order("transaction_date", { ascending: false }),
+      ]);
 
       setAccounts(
-        ((data ?? []) as DbAccount[]).map((account) => ({
+        ((accountData ?? []) as DbAccount[]).map((account) => ({
           id: account.id,
           accountName: account.account_name,
           accountType: account.account_type,
           bankName: account.bank_name,
           openingBalance: Number(account.opening_balance),
+        })),
+      );
+      setEntries(
+        ((transactionData ?? []) as DbTransaction[]).map((transaction) => ({
+          id: transaction.id,
+          account: transaction.account_name,
+          amount: Number(transaction.amount),
+          category: transaction.category,
+          name: transaction.name,
+          note: transaction.notes ?? "",
+          paidDate: transaction.paid_date ?? "",
+          paymentMethod: transaction.payment_method,
+          transactionDate: transaction.transaction_date,
+          transferToAccount: transaction.notes?.match(/^Transfer to: (.+)$/)?.[1] ?? "",
+          type: transaction.type,
         })),
       );
     }
@@ -179,6 +199,7 @@ export function AddBankAccountForm() {
             }
             window.localStorage.removeItem(bankAccountsStorageKey);
             setAccounts([]);
+            setEntries(readLocalQuickEntries());
           }}
           type="button"
         >
@@ -194,15 +215,24 @@ export function AddBankAccountForm() {
       </p>
       {accounts.length > 0 ? (
         <div className="local-bank-list">
-          {accounts.map((account) => (
-            <div className="list-row" key={account.id}>
-              <div>
-                <strong>{account.accountName}</strong>
-                <span>{account.bankName} · {account.accountType}</span>
+          {accounts.map((account) => {
+            const currentBalance = calculateAccountBalance(account, entries);
+            const movement = currentBalance - account.openingBalance;
+
+            return (
+              <div className="list-row" key={account.id}>
+                <div>
+                  <strong>{account.accountName}</strong>
+                  <span>
+                    {account.bankName} · {account.accountType} · Opening{" "}
+                    {formatCurrency(account.openingBalance)} · Movement{" "}
+                    {formatCurrency(movement)}
+                  </span>
+                </div>
+                <b>{formatCurrency(currentBalance)}</b>
               </div>
-              <b>{formatCurrency(account.openingBalance)}</b>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : null}
     </section>

@@ -31,6 +31,7 @@ type QuickEntry = {
   paidDate: string;
   paymentMethod: string;
   account: string;
+  transferToAccount?: string;
   note: string;
 };
 
@@ -46,8 +47,14 @@ const defaultEntry: QuickEntry = {
   paidDate: today,
   paymentMethod: "UPI",
   account: "",
+  transferToAccount: "",
   note: "",
 };
+
+const expenseCategories = categories.filter(
+  (category) => !["Income", "Money Received", "Transfer"].includes(category),
+);
+const incomeCategories = ["Income", "Money Received", "Other"];
 
 export function QuickEntryForm() {
   const [isDatabaseMode, setIsDatabaseMode] = useState(false);
@@ -101,6 +108,7 @@ export function QuickEntryForm() {
             paidDate: transaction.paid_date ?? "",
             paymentMethod: transaction.payment_method,
             transactionDate: transaction.transaction_date,
+            transferToAccount: transaction.notes?.match(/^Transfer to: (.+)$/)?.[1] ?? "",
             type: transaction.type,
           })),
         );
@@ -131,19 +139,52 @@ export function QuickEntryForm() {
     entry.paymentMethod === "Credit Card"
       ? localCreditCards.map((card) => ({ id: card.id, name: card.cardName }))
       : localAccounts.map((account) => ({ id: account.id, name: account.accountName }));
+  const bankAccountChoices = localAccounts.map((account) => ({
+    id: account.id,
+    name: account.accountName,
+  }));
+  const visibleCategories = entry.type === "income" ? incomeCategories : expenseCategories;
 
   function updateField<K extends keyof QuickEntry>(key: K, value: QuickEntry[K]) {
     setEntry((current) => ({ ...current, [key]: value }));
   }
 
+  function updateType(type: EntryType) {
+    setEntry((current) => ({
+      ...current,
+      account: "",
+      category: type === "income" ? "Income" : type === "transfer" ? "Transfer" : "Food",
+      name: "",
+      paidDate: today,
+      paymentMethod: type === "transfer" ? "Bank Transfer" : current.paymentMethod,
+      transactionDate: today,
+      transferToAccount: "",
+      type,
+    }));
+  }
+
   async function saveEntry() {
-    if (!entry.name.trim() || entry.amount <= 0) {
+    if (entry.amount <= 0) {
       return;
     }
 
+    if (entry.type !== "transfer" && !entry.name.trim()) {
+      return;
+    }
+
+    if (entry.type === "transfer" && (!entry.account || !entry.transferToAccount)) {
+      return;
+    }
+
+    const entryName =
+      entry.type === "transfer"
+        ? `${entry.account} to ${entry.transferToAccount}`
+        : entry.name.trim();
     const nextEntry = {
       ...entry,
+      category: entry.type === "transfer" ? "Transfer" : entry.category,
       id: crypto.randomUUID(),
+      name: entryName,
       paidDate:
         entry.paymentMethod === "Credit Card" && entry.paidDate === entry.transactionDate
           ? ""
@@ -160,9 +201,12 @@ export function QuickEntryForm() {
           account_id: account?.id ?? null,
           account_name: entry.account || "Unassigned",
           amount: entry.amount,
-          category: entry.category,
-          name: entry.name.trim(),
-          notes: entry.note.trim() || null,
+          category: nextEntry.category,
+          name: entryName,
+          notes:
+            entry.type === "transfer"
+              ? `Transfer to: ${entry.transferToAccount}`
+              : entry.note.trim() || null,
           paid_date: nextEntry.paidDate || null,
           payment_method: entry.paymentMethod,
           transaction_date: entry.transactionDate,
@@ -186,6 +230,7 @@ export function QuickEntryForm() {
             paidDate: transaction.paid_date ?? "",
             paymentMethod: transaction.payment_method,
             transactionDate: transaction.transaction_date,
+            transferToAccount: transaction.notes?.match(/^Transfer to: (.+)$/)?.[1] ?? "",
             type: transaction.type,
           },
           ...current,
@@ -202,6 +247,7 @@ export function QuickEntryForm() {
       account: entry.account,
       transactionDate: today,
       paidDate: today,
+      transferToAccount: "",
     });
   }
 
@@ -213,7 +259,7 @@ export function QuickEntryForm() {
             <button
               className={entry.type === type ? "selected" : ""}
               key={type}
-              onClick={() => updateField("type", type)}
+              onClick={() => updateType(type)}
               type="button"
             >
               {type}
@@ -250,62 +296,130 @@ export function QuickEntryForm() {
         </label>
 
         <label>
-          <span>Name</span>
+          <span>
+            {entry.type === "income"
+              ? "Received from / Source"
+              : entry.type === "transfer"
+                ? "Reference"
+                : "Paid to / Name"}
+          </span>
           <input
             onChange={(event) => updateField("name", event.target.value)}
-            placeholder="Swiggy, petrol, salary, friend transfer"
+            placeholder={
+              entry.type === "income"
+                ? "Salary, refund, cashback, friend"
+                : entry.type === "transfer"
+                  ? "Optional reference"
+                  : "Swiggy, petrol, rent, CRED"
+            }
             type="text"
             value={entry.name}
           />
         </label>
 
-        <div className="form-grid">
-          <label>
-            <span>Category</span>
-            <select
-              onChange={(event) => updateField("category", event.target.value)}
-              value={entry.category}
-            >
-              {categories.map((category) => (
-                <option key={category}>{category}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Payment</span>
-            <select
-              onChange={(event) => updateField("paymentMethod", event.target.value)}
-              value={entry.paymentMethod}
-            >
-              {paymentMethods.map((method) => (
-                <option key={method}>{method}</option>
-              ))}
-            </select>
-          </label>
-        </div>
+        {entry.type === "transfer" ? null : (
+          <div className="form-grid">
+            <label>
+              <span>{entry.type === "income" ? "Income type" : "Category"}</span>
+              <select
+                onChange={(event) => updateField("category", event.target.value)}
+                value={entry.category}
+              >
+                {visibleCategories.map((category) => (
+                  <option key={category}>{category}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>{entry.type === "income" ? "Received mode" : "Payment method"}</span>
+              <select
+                onChange={(event) => updateField("paymentMethod", event.target.value)}
+                value={entry.paymentMethod}
+              >
+                {paymentMethods.map((method) => (
+                  <option key={method}>{method}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
 
         <div className="form-grid">
           <label>
-            <span>Expense date</span>
+            <span>
+              {entry.type === "income"
+                ? "Received date"
+                : entry.type === "transfer"
+                  ? "Transfer date"
+                  : "Expense date"}
+            </span>
             <input
               onChange={(event) => updateField("transactionDate", event.target.value)}
               type="date"
               value={entry.transactionDate}
             />
           </label>
-          <label>
-            <span>Paid date</span>
-            <input
-              disabled={entry.paymentMethod === "Credit Card"}
-              onChange={(event) => updateField("paidDate", event.target.value)}
-              type="date"
-              value={entry.paymentMethod === "Credit Card" ? "" : entry.paidDate}
-            />
-          </label>
+          {entry.type === "expense" ? (
+            <label>
+              <span>Paid date</span>
+              <input
+                disabled={entry.paymentMethod === "Credit Card"}
+                onChange={(event) => updateField("paidDate", event.target.value)}
+                type="date"
+                value={entry.paymentMethod === "Credit Card" ? "" : entry.paidDate}
+              />
+            </label>
+          ) : null}
+          {entry.type === "transfer" ? (
+            <label>
+              <span>Posted date</span>
+              <input
+                onChange={(event) => updateField("paidDate", event.target.value)}
+                type="date"
+                value={entry.paidDate}
+              />
+            </label>
+          ) : null}
         </div>
 
+        {entry.type === "transfer" ? (
+          <div className="form-grid">
+            <label>
+              <span>From account</span>
+              <select
+                onChange={(event) => updateField("account", event.target.value)}
+                value={entry.account}
+              >
+                <option value="">Select source account</option>
+                {bankAccountChoices.map((account) => (
+                  <option key={account.id}>{account.name}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>To account</span>
+              <select
+                onChange={(event) => updateField("transferToAccount", event.target.value)}
+                value={entry.transferToAccount}
+              >
+                <option value="">Select destination account</option>
+                {bankAccountChoices
+                  .filter((account) => account.name !== entry.account)
+                  .map((account) => (
+                    <option key={account.id}>{account.name}</option>
+                  ))}
+              </select>
+            </label>
+          </div>
+        ) : (
           <label>
-            <span>{entry.paymentMethod === "Credit Card" ? "Credit card" : "Account"}</span>
+            <span>
+              {entry.type === "income"
+                ? "Deposited to account"
+                : entry.paymentMethod === "Credit Card"
+                  ? "Credit card"
+                  : "Account"}
+            </span>
             <select
               onChange={(event) => updateField("account", event.target.value)}
               value={entry.account}
@@ -320,6 +434,7 @@ export function QuickEntryForm() {
               ))}
             </select>
           </label>
+        )}
 
         <label>
           <span>Note</span>
